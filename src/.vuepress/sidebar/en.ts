@@ -16,6 +16,12 @@ export const enSidebar = sidebar({
       prefix: "管理经济学/",
       children: "structure",
     },
+    {
+      text: "spring",
+      icon: "note",
+      prefix: "spring/",
+      children: "structure",
+    },
     // "intro",
     // "slides",
   ],
