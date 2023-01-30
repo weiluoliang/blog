@@ -52,7 +52,7 @@ jobs:
           # 复制操作的参数。"-avzr --delete"意味部署时清空服务器目标目录下的文件
           ARGS: "-avzr --delete"
           # 源目录，相对于$GITHUB_WORKSPACE根目录的路径
-          SOURCE: "docs/.vuepress/dist/"
+          SOURCE: "src/.vuepress/dist"
           # 服务器域名
           REMOTE_HOST: "198.211.24.114" # 公网ip
           # 海外默认用户名为root
