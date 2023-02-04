@@ -8,35 +8,25 @@ heroText: luoliang
 tagline: 种树🌲最好的时间是十年前，其次是现在
 heroFullScreen: true
 projects:
-  - icon: project
-    name: project name
-    desc: project detailed description
-    link: https://your.project.link
+  - icon: http://img.yueshuge.cn/2022/5/26/df-16535589503475.png
+    name: 大飞哥
+    desc: 积跬步以至千里，致敬每个爱学习的你。
+    link: http://blog.yueshuge.cn/
 
-  - icon: link
-    name: link name
-    desc: link detailed description
-    link: https://link.address
+  - icon: http://blogimg.gkmall.top/img/tx.jpeg
+    name: 文凯
+    desc: 你可以迷茫，但不可以虚度
+    link: http://blog.gkmall.top/
 
-  - icon: book
-    name: book name
-    desc: Detailed description of the book
-    link: https://link.to.your.book
+  - icon: http://media.luoxiaofeng.cn/blog/lxf.jpeg
+    name: 峰哥
+    desc: 积跬步以至千里
+    link: http://www.luoxiaofeng.cn/
 
-  - icon: article
-    name: article name
-    desc: Detailed description of the article
-    link: https://link.to.your.article
-
-  - icon: friend
-    name: friend name
-    desc: Detailed description of friend
-    link: https://link.to.your.friend
-
-  - icon: /logo.svg
-    name: custom item
-    desc: Detailed description of this custom item
-    link: https://link.to.your.friend
+  - icon: http://media.ruanyou.top/blog/img/head-ry.jpeg
+    name: 胜贤
+    desc: 临渊羡鱼，不如退而结网
+    link: http://ruanyou.top/
 
 footer: 罗亮的博客
 ---

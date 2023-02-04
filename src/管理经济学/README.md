@@ -7,9 +7,8 @@ category:
 editLink: false
 comment: false  
 footer: false
+sidebar: false
 ---
 
-## 文章列表
-
-- [第三章 效用理论](03-效用.md)
+[第三章 效用理论](03-效用.md)
 

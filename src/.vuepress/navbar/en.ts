@@ -44,10 +44,10 @@ export const enNavbar = navbar([
       "tomato",
       "strawberry",
     ],
-  },*/
+  },
   {
     text: "链接",
     icon: "note",
     link: "https://theme-hope.vuejs.vuepress/",
-  },
+  },*/
 ]);
