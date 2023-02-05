@@ -8,7 +8,7 @@ category:
   - spring
 tag:
   - 源码
-sticky: true
+sticky: false
 star: true
 footer: false
 copyright: No Copyright

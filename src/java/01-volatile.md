@@ -8,7 +8,7 @@ category:
   - java
 tag:
   - 基础知识
-sticky: true
+sticky: false
 star: true
 footer: false
 copyright: No Copyright

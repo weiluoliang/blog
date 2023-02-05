@@ -6,11 +6,11 @@ title: 主页
 heroImage: /logo.svg
 heroText: luoliang
 tagline: 种树🌲最好的时间是十年前，其次是现在
-heroFullScreen: true
+heroFullScreen: false
 projects:
   - icon: /friend/dafeige.png
     name: 大飞哥
-    desc: 积跬步以至千里，致敬每个爱学习的你。
+    desc: 致敬每个爱学习的你
     link: http://blog.yueshuge.cn/
 
   - icon: /friend/wenkai.jpeg
@@ -28,9 +28,5 @@ projects:
     desc: 临渊羡鱼，不如退而结网
     link: http://ruanyou.top/
 
-footer: 罗亮的博客
+footer: false
 ---
-
-感谢你浏览我的博客！
-
-

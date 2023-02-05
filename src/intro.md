@@ -1,7 +1,16 @@
 ---
 icon: info
+sidebar: false
+editLink: false
+comment: false
+footer: false
 ---
 
-# 我的简介
+# 关于我
 
-Place your introduction and profile here.
+## 简介
+
+一名通过自学进入IT行业的Java工程师
+
+## 联系方式 
+邮件： luoliang.wei@foxmail.com

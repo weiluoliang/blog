@@ -2,8 +2,9 @@ import { navbar } from "vuepress-theme-hope";
 
 export const enNavbar = navbar([
   "/",
-  { text: "管理经济学", icon: "note", link: "/管理经济学/" },
-  { text: "spring", icon: "note", link: "/spring/" },
+  { text: "管理经济学", icon: "", link: "/管理经济学/" },
+  { text: "spring", icon: "", link: "/spring/" },
+  { text: "关于我", icon: "info", link: "/intro" },
   /*{
     text: "Posts",
     icon: "edit",
