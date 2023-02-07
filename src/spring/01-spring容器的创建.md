@@ -80,6 +80,106 @@ public GenericApplicationContext() {
 这个无参的构造函数初始化了一个读取器和扫描器 。 
 
 ## 二、读取器的创建
+读取器的创建在`AnnotationConfigApplicationContext`的无参构造函数中，我们一路追踪下去
+```java
+  // 创建Reader ，当前 this实现了 BeanDefinitionRegistry 
+  this.reader = new AnnotatedBeanDefinitionReader(this);
+
+  // 一路跟代码下去 
+  public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry) {
+		this(registry, getOrCreateEnvironment(registry));
+	}
+
+  // this(registry, getOrCreateEnvironment(registry));
+  public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry, Environment environment) {
+		// 省略部分代码 .. 
+    // 最终在AnnotationConfigUtils注册6个后置处理器 BeanFactoryPostProcessor,BeanPostProcessor
+		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
+	}
+
+  // AnnotationConfigUtils的方法
+  public static void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
+    // 主要逻辑就在这里啦，重点解读这段逻辑
+		registerAnnotationConfigProcessors(registry, null);
+	}
+```
+在`registerAnnotationConfigProcessors(registry, null)`方法中，主要是注册了后置处理器
+ 1. ConfigurationClassPostProcessor
+ 2. AutowiredAnnotationBeanPostProcessor
+ 3. CommonAnnotationBeanPostProcessor
+ 4. PersistenceAnnotationBeanPostProcessor (这个是JPA的，一般不使用JPA不会添加)
+ 5. EventListenerMethodProcessor 
+ 6. DefaultEventListenerFactory 
+
+```java
+public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
+			BeanDefinitionRegistry registry, @Nullable Object source) {
+
+  DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
+  if (beanFactory != null) {
+    if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
+      beanFactory.setDependencyComparator(AnnotationAwareOrderComparator.INSTANCE);
+    }
+    if (!(beanFactory.getAutowireCandidateResolver() instanceof ContextAnnotationAutowireCandidateResolver)) {
+      beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
+    }
+  }
+
+  Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
+  // 如果没有ConfigurationClassPostProcessor这个BeanDefinition，添加一个
+  // 很重要，这个是去解析@Configuration，@Import，@Bean，@Component，@Service等生成BeanDefinition
+  // 在SpringBoot中，@AutoConfiguration中使用了@Import注解，把自动配置类交给ConfigurationClassPostProcessor去解析
+  if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
+    RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+    def.setSource(source);
+    beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
+  }
+  // AutowiredAnnotationBeanPostProcessor 后置处理器 @Autowired解析
+  if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
+    RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+    def.setSource(source);
+    beanDefs.add(registerPostProcessor(registry, def, AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME));
+  }
+
+  // Check for JSR-250 support, and if present add the CommonAnnotationBeanPostProcessor.
+  // CommonAnnotationBeanPostProcessor 解析@Resource
+  if (jsr250Present && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
+    RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
+    def.setSource(source);
+    beanDefs.add(registerPostProcessor(registry, def, COMMON_ANNOTATION_PROCESSOR_BEAN_NAME));
+  }
+
+  // Check for JPA support, and if present add the PersistenceAnnotationBeanPostProcessor.
+  if (jpaPresent && !registry.containsBeanDefinition(PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME)) {
+    RootBeanDefinition def = new RootBeanDefinition();
+    try {
+      def.setBeanClass(ClassUtils.forName(PERSISTENCE_ANNOTATION_PROCESSOR_CLASS_NAME,
+          AnnotationConfigUtils.class.getClassLoader()));
+    }
+    catch (ClassNotFoundException ex) {
+      throw new IllegalStateException(
+          "Cannot load optional framework class: " + PERSISTENCE_ANNOTATION_PROCESSOR_CLASS_NAME, ex);
+    }
+    def.setSource(source);
+    beanDefs.add(registerPostProcessor(registry, def, PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME));
+  }
+  
+  if (!registry.containsBeanDefinition(EVENT_LISTENER_PROCESSOR_BEAN_NAME)) {
+    RootBeanDefinition def = new RootBeanDefinition(EventListenerMethodProcessor.class);
+    def.setSource(source);
+    beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_PROCESSOR_BEAN_NAME));
+  }
+
+  if (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) {
+    RootBeanDefinition def = new RootBeanDefinition(DefaultEventListenerFactory.class);
+    def.setSource(source);
+    beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_FACTORY_BEAN_NAME));
+  }
+
+  return beanDefs;
+}
+```
+
 
 ## 三、扫描器的创建
 
