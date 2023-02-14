@@ -12,7 +12,7 @@ export default hopeTheme({
 
   iconAssets: "iconfont",
 
-  logo: "/logo.svg",
+  logo: "/logo.jpeg",
 
   // repo: "weiluoliang/blog",
 
@@ -73,7 +73,7 @@ export default hopeTheme({
       displayFooter: true,
 
       blog: {
-        description: "Java 工程师",
+        description: "种树🌲最好的时间是十年前，其次是现在",
         intro: "/intro.html",
       },
       /* 

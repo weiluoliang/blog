@@ -3,10 +3,11 @@ home: true
 layout: BlogHome
 icon: home
 title: 主页
-heroImage: /logo.svg
-heroText: luoliang
-tagline: 种树🌲最好的时间是十年前，其次是现在
-heroFullScreen: false
+heroImage: false
+heroText: false
+tagline: false
+heroFullScreen: false 
+# bgImage: bg2.pgg
 projects:
   - icon: /friend/dafeige.png
     name: 大飞哥
