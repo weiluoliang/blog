@@ -1,4 +1,11 @@
 import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js/lib/core';
+import type { LanguageFn } from 'highlight.js';
+import bash from 'highlight.js/lib/languages/bash';
+import json from 'highlight.js/lib/languages/json';
+import nginx from 'highlight.js/lib/languages/nginx';
+import sql from 'highlight.js/lib/languages/sql';
+import typescript from 'highlight.js/lib/languages/typescript';
 
 export interface Heading {
   id: string;
@@ -60,10 +67,73 @@ const categoryConfigs: Record<string, { description: string; order: number }> = 
   },
 };
 
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('shell', createShellLanguage);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('nginx', nginx);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('typescript', typescript);
+
+function createShellLanguage(
+  api: Parameters<LanguageFn>[0],
+): ReturnType<LanguageFn> {
+  const language = bash(api);
+  const keywords =
+    typeof language.keywords === 'object' && !Array.isArray(language.keywords)
+      ? language.keywords
+      : {};
+  const builtIns = keywords.built_in;
+  const existingBuiltIns = Array.isArray(builtIns)
+    ? builtIns
+    : typeof builtIns === 'string'
+      ? builtIns.split(/\s+/)
+      : [];
+
+  language.name = 'Shell';
+  language.aliases = ['shellscript'];
+  language.keywords = {
+    ...keywords,
+    built_in: [
+      ...existingBuiltIns,
+      'curl',
+      'docker',
+      'git',
+      'journalctl',
+      'kubectl',
+      'nginx',
+      'npm',
+      'pnpm',
+      'rsync',
+      'scp',
+      'ssh',
+      'systemctl',
+      'wget',
+      'yarn',
+    ],
+  };
+  language.contains.push({
+    scope: 'attribute',
+    match: /(^|\s)-{1,2}[a-zA-Z0-9][\w=-]*/,
+    relevance: 0,
+  });
+
+  return language;
+}
+
 const markdown = new MarkdownIt({
   html: false,
   linkify: true,
   typographer: true,
+  highlight(code, language) {
+    if (language && hljs.getLanguage(language)) {
+      return hljs.highlight(code, {
+        language,
+        ignoreIllegals: true,
+      }).value;
+    }
+
+    return '';
+  },
 });
 
 markdown.renderer.rules.heading_open = (tokens, index) => {
