@@ -1,9 +1,12 @@
 import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js/lib/core';
-import type { LanguageFn } from 'highlight.js';
+import type {LanguageFn} from 'highlight.js';
 import bash from 'highlight.js/lib/languages/bash';
+import go from 'highlight.js/lib/languages/go';
+import java from 'highlight.js/lib/languages/java';
 import json from 'highlight.js/lib/languages/json';
 import nginx from 'highlight.js/lib/languages/nginx';
+import python from 'highlight.js/lib/languages/python';
 import sql from 'highlight.js/lib/languages/sql';
 import typescript from 'highlight.js/lib/languages/typescript';
 
@@ -69,8 +72,11 @@ const categoryConfigs: Record<string, { description: string; order: number }> = 
 
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('shell', createShellLanguage);
+hljs.registerLanguage('go', go);
+hljs.registerLanguage('java', java);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('nginx', nginx);
+hljs.registerLanguage('python', python);
 hljs.registerLanguage('sql', sql);
 hljs.registerLanguage('typescript', typescript);
 
