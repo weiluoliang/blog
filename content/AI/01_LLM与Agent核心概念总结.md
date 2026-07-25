@@ -170,10 +170,89 @@ def get_weather(city: str) -> str:
 mcp.run()
 ```
 
-## Agent  
+MCP已经是行业标准了，但请注意它不是什么AI新能力，只是把怎么描述工具，怎么调用工具标准了。底层还是Tool那一套：
+模型决定什么时候调用工具，外围工具执行调用工具，把执行结果返回给模型。
 
+## Agent: 给LLM加上循环
 
-## Skills 
+有了Tool， LLM就有了执行能力，但如果只是【用户提问--模型调用一次工具--返回结果】这种一次性问答的话，能做的事情非常有限。
+
+一个任务往往需要多个步骤，比如写代码： 先读一下文件看看历史逻辑，再修改，测试一下看执行结果，确认是否正确。
+
+Agent的思路： LLM+ Tool Use 放到一个循环里面.
+
+伪代码：
+
+```bash
+while 未完成：
+  模型思考下一步改做什么
+  if 模型认为调用工具：
+    执行工具，把结果追加到上下文
+  else if 模型认为完成：
+     结束循环，输出最终结果
+```
+
+Claude ,Codex 这种编程Agent本质就是这个循环，配置上相关的工具： 读文件，写文件，执行命令，搜索代码、运行测试。
+
+模型在循环中不断地 思考--行动--观察结果--再思考。
+
+所以 Agent并不神秘，它的【智能】来自两部分： 模型本身的推理能力决定了它是否能想出正确的下一步，工具赋予了它实现想法的能力。
+
+LLM是大脑，工具是手和脚，循环是驱动力，结合起来就是Agent。
+
+## Skills：可复用的工作流程
+
+有了LLM和工具，Agent知道自己能做什么，但是面对一个非常复杂的问题，它还要知道【该怎么做】，也就是工作流程。
+
+这个就是Skills需要解决的问题。
+
+虽然模型有自主解决问题的能力，你给他一个问题，它能自己想怎么做，但是可能不稳定，每次执行的方式可能不一样。
+
+Skills把一套完整的操作流程写成了文档，Agent照着一步步执行即可。
+
+Anthropic官方的PDF Skill举例，结构如下：
+
+```bash
+skills/pdf/
+├── SKILL.md        # 核心文件：何时触发 + 操作指南
+├── reference.md    # 详细参考文档
+├── forms.md        # 表单填写专项指南
+└── scripts/        # 预写好的 Python 脚本
+```
+
+其中最核心的文件是 `SKILL.md`,它告诉LLM什么时候调用这个Skill。
+
+```bash
+---
+name: pdf
+description: Use this skill whenever the user wants to do
+  anything with PDF files. This includes reading or extracting
+  text/tables from PDFs, combining or merging multiple PDFs,
+  splitting PDFs apart, rotating pages, adding watermarks,
+  creating new PDFs, filling PDF forms...
+---
+```
+
+正文部分是操作指南，每个脚本的用法，怎么读取PDF。怎么合并、怎么提取表格、甚至连代码示例都写好了。
+`scripts/`目录下放一些已经写好的Python脚本。
+
+```bash
+scripts/
+├── extract_form_field_info.py    # 提取表单字段信息
+├── fill_fillable_fields.py       # 填写表单字段
+├── convert_pdf_to_images.py      # PDF 转图片
+|...
+```
+
+当Agent读到`SKILL.md`，就知道具体怎么操作了 ，它不需要自己写脚本，也不需要加载脚本到上下文去【理解】，它只要知道怎么调用即可。
+
+这样做的好处很明显，Agent的读一下 `SKILL.md`，借助写好的工具就能完成任务了。
+
+大模型在加载Skills有一个巧妙的设计： 渐进式披露（Progressive Disclosure）， 一个完整的`PDF Skill`token量会很庞大，
+如果一下子加载太多，就会非常的浪费Token。 启动的时候只是先加载简介，让大模型知道这个Skill是干啥的，当真正要调用这个Skill才会
+加载正文。
+
+按需加载，大幅度节省Token。
 
 ## RAG 
 
