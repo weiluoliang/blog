@@ -96,3 +96,70 @@ awk '{print $5}' /var/log/messages | sort | uniq -c | sort -rn | head -20
      stdout/journal/syslog 这条链路
    - systemd 层面 StandardOutput=null 做兜底,避免应用日志配置再出问题时拖累系统盘
    - logrotate/journald 的大小限制作为最后一道保险,而不是第一道防线
+
+## 防火墙
+
+CentOS/RHEL 7+ (使用firewalld)
+
+```shell
+# 查看防火墙状态
+sudo systemctl status firewalld
+
+# 查看已开放的端口
+sudo firewall-cmd --list-all
+
+# 查看当前区域
+sudo firewall-cmd --get-active-zones
+```
+
+Ubuntu/Debian (使用ufw)
+
+```shell
+# 查看防火墙状态
+sudo ufw status
+
+# 查看已开放的端口
+sudo ufw status numbered
+```
+
+### 开放端口
+
+方法一：使用firewalld (推荐)
+
+```shell
+# TCP端口
+sudo firewall-cmd --permanent --add-port=1180/tcp
+# UDP端口
+sudo firewall-cmd --permanent --add-port=19001/udp
+
+# 重载防火墙规则
+sudo firewall-cmd --reload
+# 查看已开放的端口
+sudo firewall-cmd --list-ports
+```
+
+方法二：使用ufw (Ubuntu/Debian)
+
+```shell
+sudo ufw allow 11554/tcp
+sudo ufw allow 19001/udp
+
+# 查看状态
+sudo ufw status
+```
+
+快速开放所有端口（测试用，不推荐生产环境）
+
+```shell
+# firewalld
+sudo firewall-cmd --permanent --add-port=11000-20000/udp
+sudo firewall-cmd --permanent --add-port=10000-20000/tcp
+sudo firewall-cmd --reload
+
+# 或临时关闭防火墙测试
+sudo systemctl stop firewalld
+```
+
+### 检查云服务商安全组
+
+如果使用的是云服务器（阿里云、腾讯云、AWS等），还需要在控制台开放安全组：
