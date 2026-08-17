@@ -203,13 +203,13 @@ SHOW TABLES;
 ```bash
 # 方式一：使用 gs_guc
 #  检查当前监听地址
-gs_guc check -D /opt/software/openGauss/data/single_node -c "listen_addresses"
+gs_guc check -D $PGDATA -c "listen_addresses"
 # 设置监听所有地址
 gs_guc set -D $PGDATA -c "listen_addresses='*'"
 # 重启数据库使配置生效
-gs_ctl restart -D /opt/software/openGauss/data/single_node -Z single_node
+gs_ctl restart -D $PGDATA -Z single_node
 # 查看数据库状态（确认启动成功）
-gs_ctl query -D /opt/software/openGauss/data/single_node
+gs_ctl query -D $PGDATA
 
 
 # 方式二：直接编辑配置文件
