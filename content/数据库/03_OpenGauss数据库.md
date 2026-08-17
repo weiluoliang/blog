@@ -232,6 +232,10 @@ gs_ctl reload -D $PGDATA -Z single_node
 > 注意：初始用户 omm 禁止用于远程登录，必须创建新用户。
 
 ```bash
+
+-- 连接
+gsql -d postgres -p 5432
+
 -- 创建远程用户
 CREATE USER remote_user WITH PASSWORD '强密码';
 
