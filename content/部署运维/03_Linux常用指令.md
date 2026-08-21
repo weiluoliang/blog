@@ -163,3 +163,92 @@ sudo systemctl stop firewalld
 ### 检查云服务商安全组
 
 如果使用的是云服务器（阿里云、腾讯云、AWS等），还需要在控制台开放安全组：
+
+## 网卡配置
+
+### Ubuntu 网卡配置
+
+一般使用netplan配置文件进行管理，配置文件的位置： /etc/netplan
+
+```bash
+# 加载的顺序是： 按文件名字典序（lexicographic）从小到大依次加载，例如 01-... < 50-... < 90-... < 99-...
+# 配置会合并 ， 后面的会覆盖前面的文件
+# 命名习惯（约定俗成，不是强制语法，但强烈建议遵守）： <两位数字前缀>-<来源/用途>.yaml
+root@gdj-video01:/etc/netplan# ll
+total 36
+drwxr-xr-x   2 root root  4096 Aug 21 11:52 ./    
+drwxr-xr-x 141 root root 12288 Aug 21 10:54 ../
+-rw-------   1 root root   104 Apr 24  2024 01-network-manager-all.yaml  
+-rw-------   1 root root   675 Aug 12 02:20 50-cloud-init.yaml
+-rw-------   1 root root   543 Aug 13 17:47 90-NM-6051479d-df65-3705-9f22-99be0f7f2e09.yaml  # 使用图像界面配置会生成这个文件 
+-rw-------   1 root root   332 Aug 21 11:50 90-NM-add72843-8b69-370f-b749-f841554c5bf9.yaml
+-rw-------   1 root root   110 Aug 21 11:52 99-enp6s0-static.yaml  # 自己修改的配置可以设置数字大点，覆盖前面的配置
+root@gdj-video01:/etc/netplan# 
+```
+
+常用命令：
+
+```bash
+# 校验语法（不生效，只检查格式对不对）
+netplan generate
+
+# 试运行：应用配置，120秒内没确认会自动回滚（改远程网卡强烈建议用这个而不是 apply）
+netplan try
+
+# 真正应用
+netplan apply
+
+# 查看 netplan 最终合并后、针对某个网卡生效的配置（很实用，能看出"最终谁赢了"）
+netplan status enp6s0 --diff   # 较新版本 netplan 支持 diff 参数，可能你的版本没有，先试 netplan status
+```
+
+写配置文件的基本语法结构
+
+```bash
+network:
+  version: 2
+  renderer: NetworkManager   # 或 networkd，通常整个系统统一，不同文件里最好保持一致
+  ethernets:
+    <网卡名>:
+      dhcp4: true/false
+      dhcp6: true/false
+      addresses:
+        - 192.168.1.10/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+          metric: 200
+      nameservers:
+        addresses: [8.8.8.8]
+        search: [example.com]
+```
+
+自动获取ip
+
+```bash
+network:
+  ethernets:
+    enp5s0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 100
+```
+
+只有内网的一般配置(简洁)：
+
+```bash
+network:
+  version: 2
+  ethernets:
+    enp6s0:
+      dhcp4: false
+      addresses:
+        - 192.168.2.250/24
+```
+
+改为配置之后执行：
+
+```bash
+netplan generate      # 先校验语法
+netplan apply         # 生效（远程操作建议先用 netplan try，见前面提到过）
+```
