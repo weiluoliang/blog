@@ -252,3 +252,10 @@ network:
 netplan generate      # 先校验语法
 netplan apply         # 生效（远程操作建议先用 netplan try，见前面提到过）
 ```
+
+## 网卡监控
+
+```bash
+nload  enp5s0
+glances 
+```
