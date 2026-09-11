@@ -105,7 +105,7 @@ source ~/.bashrc
 # 本地连接 omm用户下可以免密登录
 gsql -d postgres -p 5432
 # 普通用户登录  -d 数据库 -U 用户名 -W 密码
-gsql -d olink -p 5432 -U olink -W 'Ol5503483'
+gsql -d olink -p 5432 -U olink -W '12345678@Abv'
 # 使用 -h 参数指定服务器IP，-U 指定你创建的用户
 gsql -h 你的服务器IP -d postgres -p 5432 -U remote_user -W '你的强密码'
 
