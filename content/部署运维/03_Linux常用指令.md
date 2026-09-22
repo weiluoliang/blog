@@ -259,3 +259,46 @@ netplan apply         # 生效（远程操作建议先用 netplan try，见前�
 nload  enp5s0
 glances 
 ```
+
+### 麒麟网卡配置
+
+```bash
+# 查看配置
+nmcli con show
+
+# 配置静态IP DNS
+nmcli con mod eno2 \
+  ipv4.method manual \
+  ipv4.addresses 192.168.1.25/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns 223.5.5.5
+# 激活新配置
+nmcli con up eno2
+
+# 验证配置
+ip a show eno2
+ip route
+cat /etc/resolv.conf
+ping -c 3 10.128.14.1
+
+# 配置路由优先级 ，数字越小优先级越高
+nmcli con mod eno2 ipv4.route-metric 50
+nmcli con up eno2
+
+nmcli con mod eno1 ipv4.route-metric 200
+nmcli con up eno1
+
+# 验证路由
+ip route
+ip route get 8.8.8.8
+```
+
+### windows静态路由配置
+
+```bash
+# 方式一,按网关添加(如果有线网卡本身有自己的网关,比如 192.168.1.1):
+route -p add 10.224.11.0 mask 255.255.255.0 192.168.1.1
+
+# 方式二,直接指定接口索引(不需要知道网关,适合没有网关或者想强制走这块网卡的情况):
+route -p add 10.224.11.0 mask 255.255.255.0 0.0.0.0 IF 12
+```
