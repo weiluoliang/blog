@@ -302,3 +302,9 @@ route -p add 10.224.11.0 mask 255.255.255.0 192.168.1.1
 # 方式二,直接指定接口索引(不需要知道网关,适合没有网关或者想强制走这块网卡的情况):
 route -p add 10.224.11.0 mask 255.255.255.0 0.0.0.0 IF 12
 ```
+
+## 查询IP
+
+```bash
+ $t = 1..254 | % { (New-Object Net.NetworkInformation.Ping).SendPingAsync("192.168.1.$_",500) }; [Threading.Tasks.Task]::WaitAll($t); $t | ? { $_.Result.Status -eq 'Success' } | % { $_.Result.Address.ToString() }
+```
